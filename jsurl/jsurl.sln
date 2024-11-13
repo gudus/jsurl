@@ -5,6 +5,8 @@ VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jsurl", "jsurl\jsurl.csproj", "{A2B016E6-9CE9-497C-AAF8-3CB9C0E351FE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jsurl.test", "..\jsurl.test\jsurl.test.csproj", "{97EF31A6-248C-4EF0-B464-1C1F6518F28B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{A2B016E6-9CE9-497C-AAF8-3CB9C0E351FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2B016E6-9CE9-497C-AAF8-3CB9C0E351FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2B016E6-9CE9-497C-AAF8-3CB9C0E351FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97EF31A6-248C-4EF0-B464-1C1F6518F28B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97EF31A6-248C-4EF0-B464-1C1F6518F28B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97EF31A6-248C-4EF0-B464-1C1F6518F28B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97EF31A6-248C-4EF0-B464-1C1F6518F28B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
