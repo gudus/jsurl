@@ -177,6 +177,7 @@ namespace jsurl
 
                         }
                         i = Expected(data, i-1, ')');
+                        return result;
                         break;
                     case '\'':
                         i++;
@@ -203,6 +204,7 @@ namespace jsurl
                             result = bool.Parse(sub);
                             //if (typeof result === "undefined") throw new Error("bad value keyword: " + sub);
                         }
+                        return result;
                         break;
                 }
 
@@ -211,7 +213,7 @@ namespace jsurl
             return result;
         }
 
-        private static string GetProperty(string data, ref int i)
+        private static string GetPropertyOld(string data, ref int i)
         {
             var beg = i;
             string r = "";
@@ -224,12 +226,12 @@ namespace jsurl
                         if (beg < i) r += data.Substring(beg, i- beg);
                         if (data[i + 1] == '*')
                         {
-                            r += Encoding.ASCII.GetString(FromHex(data.Substring(i + 2, i + 6)));
+                            r += Encoding.ASCII.GetString(FromHex(data.Substring(i + 2, data.Length - (i + 6))));
                             beg = (i += 6);
                         }
                         else
                         {
-                            r += Encoding.ASCII.GetString(FromHex(data.Substring(i + 1, i + 3)));
+                            r += Encoding.ASCII.GetString(FromHex(data.Substring(i + 1, data.Length-( i + 3))));
                             beg = (i += 3);
                         }
                         break;
@@ -249,6 +251,70 @@ namespace jsurl
             }
             return r + data.Substring(beg, i- beg);
         }
+
+        private static string GetProperty(string data, ref int i)
+        {
+            int beg = i;
+            string r = "";
+            char ch = data[i];
+            while (i < data.Length&& ch!= '~' && ch != ')')
+            {
+                switch (ch)
+                {
+                    case '*':
+                        if (beg < i) r += data.Substring(beg, i- beg);
+                        if(data[i+1] == '*')
+                        {
+                            //r+= String.fromCharCode(parseInt(data.Substring(i + 2, 6), 16)), beg = (i += 6);
+                            string text = data.Substring(i + 1, 6);
+                            int actual = ParseInteger(text);
+                            string textHex = actual.ToString("x4");
+                            char charCode = (char)int.Parse(textHex, System.Globalization.NumberStyles.HexNumber);
+                            r += charCode;
+                            i += 6;
+                            beg = i;
+                        }
+                        else
+                        {
+                            //r += String.fromCharCode(parseInt(s.substring(i + 1, i + 3), 16)), beg = (i += 3);
+                            string text = data.Substring(i, 3);
+                            int actual = ParseInteger(text);
+                            string textHex = actual.ToString("x4");
+                            char charCode = (char)int.Parse(textHex, System.Globalization.NumberStyles.HexNumber);
+                            r += charCode;
+                            i += 3;
+                            beg = i;
+                        }
+                        break;
+                    case '!':
+                        if (beg < i) r += data.Substring(beg, i - beg);
+                        r += '$';
+                        beg = ++i;
+                        break;
+                    default:
+                        i++;
+                        break;
+                }
+                ch = data[i];
+            }
+            return r + data.Substring(beg, i - beg);
+        }
+
+        private static readonly Regex LeadingInteger = new Regex(@"^(-?\d+)");
+        private static int ParseInteger(string item)
+        {
+            if (item.StartsWith('*'))
+            {
+                item = item.Substring(1, item.Length - 1);
+            }
+            Match match = LeadingInteger.Match(item);
+            if (!match.Success)
+            {
+                throw new ArgumentException("Not an integer");
+            }
+            return int.Parse(match.Value);
+        }
+
 
         private static byte[] FromHex(string hex)
         {
