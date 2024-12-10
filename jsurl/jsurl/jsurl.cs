@@ -5,6 +5,8 @@ using System.Collections;
 using System.Text;
 using System.Runtime.Remoting;
 using System.Dynamic;
+using System;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace jsurl
 {
@@ -117,31 +119,35 @@ namespace jsurl
                 return (index+1);
         }
 
-        //public static dynamic Parse(string data)
-        //{
-        //    if (data == null) return null;
-        //    data = Regex.Replace(data, @"/%(25)*27/g", "'");
-        //    int i = 0;
-        //    int dataLength = data.Length;
-
-        //    i=Expected(data, i, '~');
-
-            
-        //}
+        public static bool TryParse(string data,out dynamic def)
+        {
+            try
+            {
+                def= Parse(data);
+            }
+            catch (Exception e)
+            {
+                def = null;
+                return false;
+            }
+            return true;
+        }
 
         public static dynamic Parse(string data)
         {
             int i = 0;
-            return Parse(data, ref i);
+            dynamic result = null;
+            return Parse(data, ref i,ref result);
         }
 
-        private static dynamic Parse(string data,ref int i)
+        private static dynamic Parse(string data,ref int i, ref dynamic result)
         {
-            dynamic result= null;
+            //dynamic result= null;
             if (data == null) return null;
             data = Regex.Replace(data, @"%(25)*27", "'");
             i = Expected(data, i, '~');
-            do
+            bool done=false;
+            while (i < data.Length&& !done)
             {
                 char ch = data[i];
                 switch (ch)
@@ -157,7 +163,8 @@ namespace jsurl
                             {
                                 do
                                 {
-                                    result.Add(Parse(data, ref i));
+                                    dynamic r = null;
+                                    result.Add(Parse(data, ref i,ref r));
                                 } while (data[i] == '~');
                             }
 
@@ -170,14 +177,15 @@ namespace jsurl
                                 do
                                 {
                                     var key = GetProperty(data,ref i);
-                                    (result as IDictionary<string, object>).Add(key, Parse(data, ref i));
+                                    dynamic r = null;
+                                    (result as IDictionary<string, object>).Add(key, Parse(data, ref i,ref r));
                                     ++i;
-                                } while (data[i-1] == '~'&&i<data.Length);
+                                } while (data[i-1] == '~' &&i<data.Length);
                             }
 
                         }
                         i = Expected(data, i-1, ')');
-                        return result;
+                        done = true;
                         break;
                     case '\'':
                         i++;
@@ -186,7 +194,6 @@ namespace jsurl
                         break;
                     default:
                        int beg= i;
-                        //Regex regex = new Regex(@"/[^)~]/");
                         while (i < data.Length && Regex.IsMatch(data[i].ToString(), @"[^)~]"))
                         { 
                             i++;
@@ -194,7 +201,12 @@ namespace jsurl
                         var sub = data.Substring(beg, i- beg);
                         if (Regex.IsMatch(ch.ToString(), @"[\d\-]"))
                         {
-                            result = float.Parse(sub);
+                            result = decimal.Parse(sub);
+                            if (result == Math.Floor(result))
+                            {
+                                result = (int)result;
+                            }
+
                         }else if (sub == "null")
                         {
                             result = null;
@@ -208,7 +220,7 @@ namespace jsurl
                         break;
                 }
 
-            } while (i < data.Length);
+            }
 
             return result;
         }
@@ -267,9 +279,8 @@ namespace jsurl
                         {
                             //r+= String.fromCharCode(parseInt(data.Substring(i + 2, 6), 16)), beg = (i += 6);
                             string text = data.Substring(i + 1, 6);
-                            int actual = ParseInteger(text);
-                            string textHex = actual.ToString("x4");
-                            char charCode = (char)int.Parse(textHex, System.Globalization.NumberStyles.HexNumber);
+                            int actual = ParseInteger(text,out text);
+                            char charCode = (char)actual;
                             r += charCode;
                             i += 6;
                             beg = i;
@@ -278,9 +289,8 @@ namespace jsurl
                         {
                             //r += String.fromCharCode(parseInt(s.substring(i + 1, i + 3), 16)), beg = (i += 3);
                             string text = data.Substring(i, 3);
-                            int actual = ParseInteger(text);
-                            string textHex = actual.ToString("x4");
-                            char charCode = (char)int.Parse(textHex, System.Globalization.NumberStyles.HexNumber);
+                            int actual = ParseInteger(text, out text);
+                            char charCode = (char)actual;
                             r += charCode;
                             i += 3;
                             beg = i;
@@ -300,8 +310,9 @@ namespace jsurl
             return r + data.Substring(beg, i - beg);
         }
 
-        private static readonly Regex LeadingInteger = new Regex(@"^(-?\d+)");
-        private static int ParseInteger(string item)
+        private static readonly Regex LeadingInteger = new Regex(@"^(-?\d+([A-z])*)");
+        //private static readonly Regex LeadingInteger = new Regex(@"^(-?\d+)");
+        private static int ParseInteger(string item,out string text)
         {
             if (item.StartsWith('*'))
             {
@@ -312,7 +323,8 @@ namespace jsurl
             {
                 throw new ArgumentException("Not an integer");
             }
-            return int.Parse(match.Value);
+            text = item;
+            return Convert.ToInt32(match.Value, 16); 
         }
 
 

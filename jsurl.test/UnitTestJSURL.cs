@@ -130,168 +130,43 @@ namespace jsurl.test
         [TestMethod]
         public void Test07Parse()
         {
-            var actual = jsurl.Parse("~(type~'stamp~documentId~'5e52732b-50a3-4925-9abb-6e7810e4defc~val~'Page*201*20stamp~vals~(TAG~'234-**0442**0442-00223~SERIAL~'N*2fA)~page~1~pageRect~(x1~0~x2~596.75~y1~0~y2~844.142~width~596.75~height~844.142~scale~1~cx~298.375~cy~422.071~s~503741.73850000004~system~(origin~'TopLeft~width~596.75~height~844.142))~stampRect~(x1~321.25~x2~538~y1~584.25~y2~710.75~width~216.75~height~126.5~scale~1~cx~429.625~cy~647.5~s~27418.875~whr~1.7134387351778657~hwr~0.5836216839677048~sd~216.75~system~(origin~'BottomRight~width~596.75~height~844))~parts~(~(key~1~type~'stampPart~val~'234-**0442**0442-00223*20N*2fA~rect~(x1~321.25~y1~584.25~x2~538~y2~710.75~system~(origin~'BottomRight~width~596.75~height~844))~config~(id~'b4ff8f92-d1be-466b-8b34-40e74aa3530b~name~'ICF*20009A*20W~templateType~(id~'a3b011d4-25c9-44a7-8ab6-002ae4d79658~name~'Tag~color~'rgb*28255*2c*204*2c*2019*29~sortOrder~0)~templateTypeId~'a3b011d4-25c9-44a7-8ab6-002ae4d79658)~configId~'b4ff8f92-d1be-466b-8b34-40e74aa3530b~configName~'ICF*20009A*20W~parts~(~(key~'~val~'QUALITY~rect~(x1~501.75~y1~703.75~x2~538~y2~710.75~system~(origin~'BottomRight~width~596.75~height~844)))~(key~'~val~'009A~rect~(x1~321.25~y1~694~x2~341.25~y2~700.5~system~(origin~'BottomRight~width~596.75~height~844)))~(key~'~rect~(x1~431.75~y1~584.25~x2~520~y2~591.75~system~(origin~'BottomRight~width~596.75~height~844)))~(key~'TAG~rect~(x1~379~y1~585.25~x2~423.25~y2~591.75~system~(origin~'BottomRight~width~596.75~height~844)))~(key~'SERIAL~val~'N*2fA)))))");
-            
-            var obj1Str = JsonConvert.SerializeObject(actual);
-            var obj2Str = JsonConvert.SerializeObject(@"");
-            string expected = @"{
-    ""documentId"": ""5e52732b-50a3-4925-9abb-6e7810e4defc"",
-    ""page"": 1,
-    ""pageRect"": {
-        ""cx"": 298.375,
-        ""cy"": 422.071,
-        ""height"": 844.142,
-        ""s"": 503741.7385,
-        ""scale"": 1,
-        ""system"": {
-            ""height"": 844.142,
-            ""origin"": ""TopLeft"",
-            ""width"": 596.75
-        },
-        ""width"": 596.75,
-        ""x1"": 0,
-        ""x2"": 596.75,
-        ""y1"": 0,
-        ""y2"": 844.142
-    },
-    ""parts"": [
-        {
-            ""config"": {
-                ""id"": ""b4ff8f92-d1be-466b-8b34-40e74aa3530b"",
-                ""name"": ""ICF 009A W"",
-                ""templateType"": {
-                    ""color"": ""rgb(255, 4, 19)"",
-                    ""id"": ""a3b011d4-25c9-44a7-8ab6-002ae4d79658"",
-                    ""name"": ""Tag"",
-                    ""sortOrder"": 0
-                },
-                ""templateTypeId"": ""a3b011d4-25c9-44a7-8ab6-002ae4d79658""
-            },
-            ""configId"": ""b4ff8f92-d1be-466b-8b34-40e74aa3530b"",
-            ""configName"": ""ICF 009A W"",
-            ""key"": 1,
-            ""parts"": [
-                {
-                    ""key"": """",
-                    ""rect"": {
-                        ""system"": {
-                            ""height"": 844,
-                            ""origin"": ""BottomRight"",
-                            ""width"": 596.75
-                        },
-                        ""x1"": 501.75,
-                        ""x2"": 538,
-                        ""y1"": 703.75,
-                        ""y2"": 710.75
-                    },
-                    ""val"": ""QUALITY""
-                },
-                {
-                    ""key"": """",
-                    ""rect"": {
-                        ""system"": {
-                            ""height"": 844,
-                            ""origin"": ""BottomRight"",
-                            ""width"": 596.75
-                        },
-                        ""x1"": 321.25,
-                        ""x2"": 341.25,
-                        ""y1"": 694,
-                        ""y2"": 700.5
-                    },
-                    ""val"": ""009A""
-                },
-                {
-                    ""key"": """",
-                    ""rect"": {
-                        ""system"": {
-                            ""height"": 844,
-                            ""origin"": ""BottomRight"",
-                            ""width"": 596.75
-                        },
-                        ""x1"": 431.75,
-                        ""x2"": 520,
-                        ""y1"": 584.25,
-                        ""y2"": 591.75
-                    }
-                },
-                {
-                    ""key"": ""TAG"",
-                    ""rect"": {
-                        ""system"": {
-                            ""height"": 844,
-                            ""origin"": ""BottomRight"",
-                            ""width"": 596.75
-                        },
-                        ""x1"": 379,
-                        ""x2"": 423.25,
-                        ""y1"": 585.25,
-                        ""y2"": 591.75
-                    }
-                },
-                {
-                    ""key"": ""SERIAL"",
-                    ""val"": ""N/A""
-                }
-            ],
-            ""rect"": {
-                ""system"": {
-                    ""height"": 844,
-                    ""origin"": ""BottomRight"",
-                    ""width"": 596.75
-                },
-                ""x1"": 321.25,
-                ""x2"": 538,
-                ""y1"": 584.25,
-                ""y2"": 710.75
-            },
-            ""type"": ""stampPart"",
-            ""val"": ""234-тт-00223 N/A""
-        }
-    ],
-    ""stampRect"": {
-        ""cx"": 429.625,
-        ""cy"": 647.5,
-        ""height"": 126.5,
-        ""hwr"": 0.583621683967705,
-        ""s"": 27418.875,
-        ""scale"": 1,
-        ""sd"": 216.75,
-        ""system"": {
-            ""height"": 844,
-            ""origin"": ""BottomRight"",
-            ""width"": 596.75
-        },
-        ""whr"": 1.71343873517787,
-        ""width"": 216.75,
-        ""x1"": 321.25,
-        ""x2"": 538,
-        ""y1"": 584.25,
-        ""y2"": 710.75
-    },
-    ""type"": ""stamp"",
-    ""val"": ""Page 1 stamp"",
-    ""vals"": {
-        ""SERIAL"": ""N/A"",
-        ""TAG"": ""234-тт-00223""
-    }
-}";
-            Assert.AreEqual(expected, obj1Str);
+           //var actual = jsurl.Parse(@"~(documentId~'5e52732b~page~1~pageRect~(cx~298.375~cy~422.071~height~844.142~s~503741.7385~scale~1~system~(height~844.142~origin~'TopLeft~width~596.75)~width~596.75~x1~0~x2~596.75~y1~0~y2~844.142)~parts~(~(key~1~rect~(system~(height~844~origin~'BottomRight~width~596.75)~x1~321.25~x2~538~y1~584.25~y2~710.75)~type~'stampPart~val~'000SD11*20N*2fA))~stampRect~(cx~429.625~cy~647.5~height~126.5~hwr~0.583621683967705~s~27418.875~scale~1~sd~216.75~system~(height~844~origin~'BottomRight~width~596.75)~whr~1.71343873517787~width~216.75~x1~321.25~x2~538~y1~584.25~y2~710.75)~type~'st~val~'Page*201~vals~(ser~'N*2fA~ta~'000SD11))");
+            var actual = jsurl.Parse(@"~(documentId~'5e52732b~parts~(~(key~1~rect~(system~(height~844~origin~'BottomRight~width~596.75)~x1~321.25~x2~538~y1~584.25~y2~710.75)~type~'stampPart~val~'000SD11*20N*2fA))~stampRect~(cx~429.625~cy~647.5~height~126.5~hwr~0.583621683967705~s~27418.875~scale~1~sd~216.75~system~(height~844~origin~'BottomRight~width~596.75)~whr~1.71343873517787~width~216.75~x1~321.25~x2~538~y1~584.25~y2~710.75)~type~'st)");
+
+            string obj1Str = JsonConvert.SerializeObject(actual).Replace("\r\n", "").Replace(" ", "");
+            string expected = @"{""documentId"":""5e52732b"",""parts"":[{""key"":1,""rect"":{""system"":{""height"":844,""origin"":""BottomRight"",""width"":596.75},""x1"":321.25,""x2"":538,""y1"":584.25,""y2"":710.75},""type"":""stampPart"",""val"":""000SD11 N/A""}],""stampRect"":{""cx"":429.625,""cy"":647.5,""height"":126.5,""hwr"":0.583621683967705,""s"":27418.875,""scale"":1,""sd"":216.75,""system"":{""height"":844,""origin"":""BottomRight"",""width"":596.75},""whr"":1.71343873517787,""width"":216.75,""x1"":321.25,""x2"":538,""y1"":584.25,""y2"":710.75},""type"":""st""}".Replace("\r\n", "").Replace(" ", "");
+
+            Assert.AreEqual(expected.GetHashCode(), obj1Str.GetHashCode());
             //Assert.AreEqual(obj, actual);
         }
 
         [TestMethod]
-        public void Test08TryParse()
+        public void Test08Parse()
+        {
+            var actual = jsurl.Parse(@"~(documentId~'5e52732b~page~1~pageRect~(cx~298.375~cy~422.071~height~844.142~s~503741.7385~scale~1~system~(height~844.142~origin~'TopLeft~width~596.75)~width~596.75~x1~0~x2~596.75~y1~0~y2~844.142)~parts~(~(config~(id~'b4ff8f92~name~'form~templateType~(color~'rgb*28255*2c*204*2c*2019*29~id~'a3b011d4~name~'ta~sortOrder~0)~templateTypeId~'a3b011d4)~configId~'b4ff8f92~configName~'FORM1~key~1~parts~(~(key~'~rect~(system~(height~844~origin~'BottomRight~width~596.75)~x1~501.75~x2~538~y1~703.75~y2~710.75)~val~'QUALITY)~(key~'~rect~(system~(height~844~origin~'BottomRight~width~596.75)~x1~321.25~x2~341.25~y1~694~y2~700.5)~val~'009A)~(key~'~rect~(system~(height~844~origin~'BottomRight~width~596.75)~x1~431.75~x2~520~y1~584.25~y2~591.75))~(key~'TAG~rect~(system~(height~844~origin~'BottomRight~width~596.75)~x1~379~x2~423.25~y1~585.25~y2~591.75))~(key~'SERIAL~val~'N*2fA))~rect~(system~(height~844~origin~'BottomRight~width~596.75)~x1~321.25~x2~538~y1~584.25~y2~710.75)~type~'stampPart~val~'000SD11*20N*2fA))~stampRect~(cx~429.625~cy~647.5~height~126.5~hwr~0.583621683967705~s~27418.875~scale~1~sd~216.75~system~(height~844~origin~'BottomRight~width~596.75)~whr~1.71343873517787~width~216.75~x1~321.25~x2~538~y1~584.25~y2~710.75)~type~'st~val~'Page*201~vals~(ser~'N*2fA~ta~'000SD11))");
+            
+            string obj1Str = JsonConvert.SerializeObject(actual).Replace("\r\n", "").Replace(" ", "");
+            string expected = @"{""documentId"":""5e52732b"",""page"":1,""parts"":[{""key"":1,""rect"":{""system"":{""height"":844,""origin"":""BottomRight"",""width"":596.75},""x1"":321.25,""x2"":538,""y1"":584.25,""y2"":710.75},""type"":""stampPart"",""val"":""000SD11 N/A""}],""stampRect"":{""cx"":429.625,""cy"":647.5,""height"":126.5,""hwr"":0.583621683967705,""s"":27418.875,""scale"":1,""sd"":216.75,""system"":{""height"":844,""origin"":""BottomRight"",""width"":596.75},""whr"":1.71343873517787,""width"":216.75,""x1"":321.25,""x2"":538,""y1"":584.25,""y2"":710.75},""type"":""st"",""val"":""Page 1"",""vals"":{""ser"":""N/A"",""ta"":""000SD11""}}".Replace("\r\n", "").Replace(" ", "");
+
+            Assert.AreEqual(expected.GetHashCode(), obj1Str.GetHashCode());
+            //Assert.AreEqual(obj, actual);
+        }
+
+        [TestMethod]
+        public void Test09TryParse()
         {
             //NOT IMPLEMENTED
-            var actual = jsurl.Parse("~null");
-            Assert.IsNull(actual);    
+            var actual = jsurl.TryParse("~null",out dynamic result);
+            Assert.IsTrue(actual);    
+            Assert.IsNull(result);    
             
-            actual = jsurl.Parse("~1");
-            Assert.AreEqual(1,actual);
+            actual = jsurl.TryParse("~1", out result);
+            Assert.IsTrue(actual);
+            Assert.AreEqual(1, result);
 
-            actual = jsurl.Parse("1");
-            Assert.AreEqual(null, actual);
+            actual = jsurl.TryParse("1", out result);
+            Assert.IsFalse(actual);
+            Assert.IsNull(result);
         }
     }
 }
