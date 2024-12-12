@@ -21,20 +21,17 @@ namespace jsurl
         private static string RegexReadTerm(Match m)
         {
             if (m.Value == "$") return "!";
-            //m.Value = m.Value.charCodeAt(0);
             int ch= (int)m.Value[0];
             // thanks to Douglas Crockford for the negative slice trick
             if (ch < 0x100)
             {
                 string val = ("00" + ((int)ch).ToString("x4"));
                 return "*" + val.Substring(val.Length - 2);
-                //return "*" + ("00" + ch.ToString(16)).slice(-2);
             }
             else
             {
                 string val = ("0000" + ((int)ch).ToString("x4"));
                 return "**" + val.Substring(val.Length - 4);
-                //return "**" + ("0000" + ch.ToString(16)).slice(-4);
             }
         }
 
@@ -45,9 +42,17 @@ namespace jsurl
             Type t = data.GetType();
             switch (Type.GetTypeCode(t)) {
                 case TypeCode.Int32:
-                    int result = 0;
-                    if (int.TryParse(data?.ToString(), out result))
-                        return "~" + result;
+                    case TypeCode.Int64:
+                    int valueInt = 0;
+                    if (int.TryParse(data?.ToString(), out valueInt))
+                        return "~" + valueInt;
+                    else
+                        return "~null";
+                case TypeCode.Double:
+                    case TypeCode.Decimal:
+                    double valueDouble = 0;
+                    if (double.TryParse(data?.ToString(), out valueDouble))
+                        return "~" + valueDouble;
                     else
                         return "~null";
                 case TypeCode.Boolean:
@@ -72,7 +77,7 @@ namespace jsurl
                             text = "~";
                         return "~(" + text + ")";
                     }
-                    else if(data is ArrayList)
+                    else if(data is ArrayList || data is IList)
                     {
                         for (var i = 0; i < data.Count; i++)
                         {
@@ -135,133 +140,93 @@ namespace jsurl
 
         public static dynamic Parse(string data)
         {
-            int i = 0;
-            dynamic result = null;
-            return Parse(data, ref i,ref result);
+            int index = 0;
+            return Parse(data, ref index);
         }
 
-        private static dynamic Parse(string data,ref int i, ref dynamic result)
+        private static dynamic Parse(string data,ref int index)
         {
-            //dynamic result= null;
-            if (data == null) return null;
+            dynamic result = null;
             data = Regex.Replace(data, @"%(25)*27", "'");
-            i = Expected(data, i, '~');
-            bool done=false;
-            while (i < data.Length&& !done)
+            index = Expected(data, index, '~');
+            while (index< data.Length)
             {
-                char ch = data[i];
-                switch (ch)
+                char ch = data[index];
+                if (data[index]== '(')
                 {
-                    case '(':
-                        i++;
-                        if(data[i]== '~')
-                        {
-                            //this is array
-                            result = new List<dynamic>();
-                            if (data[i + 1] == ')') { i++; }
-                            else
-                            {
-                                do
-                                {
-                                    dynamic r = null;
-                                    result.Add(Parse(data, ref i,ref r));
-                                } while (data[i] == '~');
-                            }
-
-                        }
+                    if (index + 1 < data.Length && data[index + 1] == '~')
+                    {
+                        result = new List<dynamic>();
+                        if (data[index + 1] == ')') { index++; }
                         else
                         {
-                            result = new  ExpandoObject() as IDictionary<string, object>;
-                            if (data[i] != ')')
+                            while ((data[index+1] == '~'|| data[index]== '~') && data[index] != ')')
                             {
-                                do
-                                {
-                                    var key = GetProperty(data,ref i);
-                                    dynamic r = null;
-                                    (result as IDictionary<string, object>).Add(key, Parse(data, ref i,ref r));
-                                    ++i;
-                                } while (data[i-1] == '~' &&i<data.Length);
+                                if(data[index] != '~')
+                                    index++;
+                                dynamic r = Parse(data, ref index);
+                                result.Add(r);
                             }
-
                         }
-                        i = Expected(data, i-1, ')');
-                        done = true;
-                        break;
-                    case '\'':
-                        i++;
-                        result = GetProperty(data, ref i);
-                        return result;
-                        break;
-                    default:
-                       int beg= i;
-                        while (i < data.Length && Regex.IsMatch(data[i].ToString(), @"[^)~]"))
-                        { 
-                            i++;
-                        }
-                        var sub = data.Substring(beg, i- beg);
-                        if (Regex.IsMatch(ch.ToString(), @"[\d\-]"))
+                    }
+                    else
+                    {
+                        result = new ExpandoObject() as IDictionary<string, object>;
+                        while((data[index-1] == '~'|| data[index] == '~') && index < data.Length)
                         {
-                            result = decimal.Parse(sub);
-                            if (result == Math.Floor(result))
-                            {
-                                result = (int)result;
-                            }
-
-                        }else if (sub == "null")
-                        {
-                            result = null;
+                            index++;
+                            var key = GetProperty(data, ref index);
+                            var value = Parse(data, ref index); //Get value
+                            (result as IDictionary<string, object>).Add(key, value);
                         }
-                        else
-                        {
-                            result = bool.Parse(sub);
-                            //if (typeof result === "undefined") throw new Error("bad value keyword: " + sub);
-                        }
-                        return result;
-                        break;
+                    }
                 }
+                else if (data[index] == '\'')
+                {
+                    index++;
+                    result = GetProperty(data, ref index);
+                    break;
+                }else if (data[index] == ')')
+                {
+                    index++;
+                    break;
+                }
+                else
+                {
+                    int beg = index;
+                    while (index < data.Length && Regex.IsMatch(data[index].ToString(), @"[^)~]"))
+                    {
+                        index++;
+                    }
+                    var sub = data.Substring(beg, index - beg);
+                    if (Regex.IsMatch(ch.ToString(), @"[\d\-]"))
+                    {
+                        result = decimal.Parse(sub);
+                        if (result == Math.Floor(result))
+                        {
+                            result = (int)result;
+                        }
 
+                    }
+                    else if (sub == "null")
+                    {
+                        result = null;
+                    }
+                    else
+                    {
+                        bool value = false;
+                        if (bool.TryParse(sub, out value))
+                            result = value;
+                        else
+                        {
+                            result = sub;
+                        }
+                    }
+                    break;
+                }
             }
 
             return result;
-        }
-
-        private static string GetPropertyOld(string data, ref int i)
-        {
-            var beg = i;
-            string r = "";
-            char ch = data[i];
-            while (i< data.Length&& ch!= '~'&& ch != ')')
-            {
-                switch (ch)
-                {
-                    case '*':
-                        if (beg < i) r += data.Substring(beg, i- beg);
-                        if (data[i + 1] == '*')
-                        {
-                            r += Encoding.ASCII.GetString(FromHex(data.Substring(i + 2, data.Length - (i + 6))));
-                            beg = (i += 6);
-                        }
-                        else
-                        {
-                            r += Encoding.ASCII.GetString(FromHex(data.Substring(i + 1, data.Length-( i + 3))));
-                            beg = (i += 3);
-                        }
-                        break;
-                    case '!':
-                        if (beg < i)
-                        {
-                            r += data.Substring(beg, i- beg);
-                            r += '$';
-                            beg = ++i;
-                        }
-                        break;
-                    default:
-                        i++;
-                        break;
-                }
-                ch = data[i];
-            }
-            return r + data.Substring(beg, i- beg);
         }
 
         private static string GetProperty(string data, ref int i)
@@ -277,7 +242,6 @@ namespace jsurl
                         if (beg < i) r += data.Substring(beg, i- beg);
                         if(data[i+1] == '*')
                         {
-                            //r+= String.fromCharCode(parseInt(data.Substring(i + 2, 6), 16)), beg = (i += 6);
                             string text = data.Substring(i + 1, 6);
                             int actual = ParseInteger(text,out text);
                             char charCode = (char)actual;
@@ -287,7 +251,6 @@ namespace jsurl
                         }
                         else
                         {
-                            //r += String.fromCharCode(parseInt(s.substring(i + 1, i + 3), 16)), beg = (i += 3);
                             string text = data.Substring(i, 3);
                             int actual = ParseInteger(text, out text);
                             char charCode = (char)actual;
@@ -311,7 +274,6 @@ namespace jsurl
         }
 
         private static readonly Regex LeadingInteger = new Regex(@"^(-?\d+([A-z])*)");
-        //private static readonly Regex LeadingInteger = new Regex(@"^(-?\d+)");
         private static int ParseInteger(string item,out string text)
         {
             if (item.StartsWith('*'))
@@ -325,18 +287,6 @@ namespace jsurl
             }
             text = item;
             return Convert.ToInt32(match.Value, 16); 
-        }
-
-
-        private static byte[] FromHex(string hex)
-        {
-            hex = hex.Replace("-", "");
-            byte[] raw = new byte[hex.Length / 2];
-            for (int i = 0; i < raw.Length; i++)
-            {
-                raw[i] = Convert.ToByte(hex.Substring(i * 2, 2), 16);
-            }
-            return raw;
         }
     }
 }
