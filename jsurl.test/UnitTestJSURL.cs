@@ -176,7 +176,7 @@ namespace jsurl.test
         }
 
         [TestMethod]
-        public void Test11TryParse()
+        public void Test10TryParse()
         {
             //NOT IMPLEMENTED
             var actual = jsurl.TryParse("~null",out dynamic result);
@@ -190,6 +190,48 @@ namespace jsurl.test
             actual = jsurl.TryParse("1", out result);
             Assert.IsFalse(actual);
             Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public void Test11ObjToString()
+        {
+            Product product = new Product();
+            product.Id= Guid.Parse("cea79404-4102-47cc-934e-5151246f7aab");
+            product.Name = "JSURL Product!";
+            product.Order = 1;
+            product.Price = 10354.8488;
+            product.Deleted = true;
+            product.Categories = new List<Category>();
+            product.Categories.Add(new Category() { Code = "000$£1", Name = "Demo" });
+            product.Categories.Add(new Category() { Code = "000232D", Name = "Demo2" });
+
+            string actual = jsurl.ToString(product);
+            string expected = "~(Id~'cea79404-4102-47cc-934e-5151246f7aab~Name~'JSURL*20Product*21~Order~1~Price~10354.8488~Deleted~true~Categories~(~(Code~'000!*a31~Name~'Demo)~(Code~'000232D~Name~'Demo2)))";
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void Test12ParseToObj()
+        {
+            Product expectedProduct = new Product();
+            expectedProduct.Id = Guid.Parse("cea79404-4102-47cc-934e-5151246f7aab");
+            expectedProduct.Name = "JSURL Product!";
+            expectedProduct.Order = 1;
+            expectedProduct.Price = 10354.8488;
+            expectedProduct.Deleted = true;
+            expectedProduct.Categories = new List<Category>();
+            expectedProduct.Categories.Add(new Category() { Code = "000$£1", Name = "Demo" });
+            expectedProduct.Categories.Add(new Category() { Code = "000232D", Name = "Demo2" });
+
+            string source = "~(Id~'cea79404-4102-47cc-934e-5151246f7aab~Name~'JSURL*20Product*21~Order~1~Price~10354.8488~Deleted~true~Categories~(~(Code~'000!*a31~Name~'Demo)~(Code~'000232D~Name~'Demo2)))";
+            var productDyn = jsurl.Parse(source);
+
+            string expected = JsonConvert.SerializeObject(expectedProduct).Replace("\r\n", "").Replace(" ", "");
+            string actual = JsonConvert.SerializeObject(productDyn).Replace("\r\n", "").Replace(" ", "");
+
+            Assert.AreEqual(expected, actual);
+
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Runtime.Remoting;
 using System.Dynamic;
 using System;
 using static System.Net.Mime.MediaTypeNames;
+using Newtonsoft.Json;
 
 namespace jsurl
 {
@@ -63,8 +64,11 @@ namespace jsurl
                     if(data==null) return "~null";
 
                     List<string> tmpAry = new List<string>();
-
-                    if (data is Array)
+                    if(data is Guid)
+                    {
+                        return "~'" + Encode(data.ToString());
+                    }
+                    else if (data is Array)
                     {
                         for (var i = 0; i < data.Length; i++)
                         {
@@ -92,24 +96,35 @@ namespace jsurl
                     }
                     else
                     {
-                        IDictionary<string, object> propertyValues = data;
+                        IDictionary<string, object> propertyValues = null;
+
+                        if (!(data is ExpandoObject))
+                        {
+                            string json= JsonConvert.SerializeObject(data);
+
+                            propertyValues = (IDictionary<string, object>)JsonConvert.DeserializeObject<ExpandoObject>(json);
+                        }
+                        else
+                        {
+                            propertyValues = data;
+                        }
 
                         foreach (var prop in propertyValues)
                         {
                             //
-                            if(prop.Key != null)
+                            if (prop.Key != null)
                             {
                                 var val = ToString(prop.Value);
                                 // skip undefined and functions
-                                if (val!=null)
+                                if (val != null)
                                 {
                                     tmpAry.Add(Encode(prop.Key) + val);
                                 }
                             }
                         }
-
-                        return "~(" + string.Join("~", tmpAry)+ ")";
                     }
+                    return "~(" + string.Join("~", tmpAry)+ ")";
+                    
                 default:
                     // function, undefined
                     return "";
@@ -273,7 +288,7 @@ namespace jsurl
             return r + data.Substring(beg, i - beg);
         }
 
-        private static readonly Regex LeadingInteger = new Regex(@"^(-?\d+([A-z])*)");
+        private static readonly Regex LeadingInteger = new Regex(@"^[a-zA-Z0-9]+");
         private static int ParseInteger(string item,out string text)
         {
             if (item.StartsWith('*'))
