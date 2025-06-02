@@ -83,16 +83,20 @@ namespace jsurl
                     }
                     else if(data is ArrayList || data is IList)
                     {
-                        for (var i = 0; i < data.Count; i++)
+                        var list = data as IList;
+                        if (list!=null)
                         {
-                            tmpAry.Add(ToString(data[i]) );
+                            for (var i = 0; i < list.Count; i++)
+                            {
+                                tmpAry.Add(ToString(list[i]));
+                            }
+                            string text = "";
+                            if (tmpAry.Count > 0)
+                                text = string.Join("", tmpAry);
+                            else
+                                text = "~";
+                            return "~(" + text + ")";
                         }
-                        string text = "";
-                        if (tmpAry.Count > 0)
-                            text = string.Join("", tmpAry);
-                        else
-                            text = "~";
-                        return "~(" + text + ")";
                     }
                     else
                     {
@@ -175,15 +179,20 @@ namespace jsurl
                         if (data[index + 1] == ')') { index++; }
                         else
                         {
-                            while ((data[index+1] == '~'|| data[index]== '~') && data[index] != ')')
+                            while ((data[index+1] == '~'|| data[index]== '~') 
+                                && data[index] != ')')
                             {
                                 if(data[index] != '~')
                                     index++;
                                 dynamic r = Parse(data, ref index);
-                                result.Add(r);
+                                if(r != null) result.Add(r);
                                 if((index + 1)>= data.Length) { 
                                     break; 
                                 }
+                                //if (data[index - 1] == ')')
+                                //{
+                                //    index--;
+                                //}
                             }
                         }
                     }
@@ -197,6 +206,9 @@ namespace jsurl
                             var value = Parse(data, ref index); //Get value
                             if(!(result as IDictionary<string, object>).ContainsKey(key))
                                 (result as IDictionary<string, object>).Add(key, value);
+
+                            if (data[index - 1] == ')') 
+                                return result;
                         }
                     }
                 }
@@ -205,7 +217,8 @@ namespace jsurl
                     index++;
                     result = GetProperty(data, ref index);
                     break;
-                }else if (data[index] == ')')
+                }
+                else if (data[index] == ')')
                 {
                     index++;
                     break;
@@ -283,10 +296,10 @@ namespace jsurl
                         r += '$';
                         beg = ++i;
                         break;
-                    case '(':
-                        beg++;
-                        i++;
-                        break;
+                    //case '(':
+                    //    beg++;
+                    //    i++;
+                    //    break;
                     default:
                         i++;
                         break;

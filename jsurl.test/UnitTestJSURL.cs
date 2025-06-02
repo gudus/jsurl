@@ -49,6 +49,42 @@ namespace jsurl.test
         }
 
         [TestMethod]
+        public void Test02TwoArrays()
+        {
+            Product product1 = new Product();
+            product1.Name = "A";
+            product1.Categories = new List<Category>();
+            Product product2 = new Product();
+            product2.Name = "B";
+            product2.Categories = new List<Category>();
+            List<Product> products= new List<Product>() { product1, product2 };
+            string text = jsurl.ToString(products);
+
+            var obj1Str = JsonConvert.SerializeObject(products);
+
+            var dynProductsJSURL = jsurl.Parse(text);
+            //var dynProductsOriginal = JsonConvert.DeserializeObject<ExpandoObject>(obj1Str);
+
+            string expected = JsonConvert.SerializeObject(products).Replace("\r\n", "").Replace(" ", "").Replace("0.0", "0");
+            string actual = JsonConvert.SerializeObject(dynProductsJSURL).Replace("\r\n", "").Replace(" ", "");
+
+            Assert.AreEqual(expected, actual);
+            //string expected = "~(~)";
+            //Assert.AreEqual(expected, actual);
+
+            //expected = "~(~null~false~0~'hello*20world**203c)";
+            //array.Add(null);
+            //array.Add(false);
+            //array.Add(0);
+            //array.Add("hello world\u203c");
+
+            //actual = jsurl.ToString(array);
+
+            //Assert.AreEqual(dynProductsOriginal, dynProductsJSURL);
+
+        }
+
+        [TestMethod]
         public void Test03Objects()
         {
             dynamic obj = new ExpandoObject();
@@ -255,6 +291,7 @@ namespace jsurl.test
 
             Assert.IsTrue(productDyn);
             Assert.IsNotNull(def);
+            Assert.AreEqual(def.Count,2);
             //Assert.Pass();
 
         }
