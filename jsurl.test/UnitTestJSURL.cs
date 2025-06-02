@@ -246,5 +246,17 @@ namespace jsurl.test
             //Assert.Pass();
 
         }
+        [TestMethod]
+        public void Test15ParseToObj()
+        {
+            string source = "~(~(content~'Container~effectAllowed~'copy~disable~false~children~(~)~handle~false~type~'container~headerId~'P_GENERAL_PROPERTIES~headerName~'General*20Properties~headerDescription~null~isTop~true~propertyType~(id~'dc58626d-26ab-4af2-b3ca-60c9b1b5b3db))~(content~'Container~effectAllowed~'copy~disable~false~children~(~)~handle~false~type~'container~headerId~'P_MEASURECLASS_PROPERTIES~headerName~'Measure*20Class*20Properties~headerDescription~null~isTop~true~propertyType~(id~'dcc94203-69d1-4692-989c-7dcbd5001e68)))";
+            
+            var productDyn = jsurl.TryParse(source, out dynamic def);
+
+            Assert.IsTrue(productDyn);
+            Assert.IsNotNull(def);
+            //Assert.Pass();
+
+        }
     }
 }

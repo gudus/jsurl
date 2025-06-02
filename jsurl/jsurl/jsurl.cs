@@ -195,7 +195,8 @@ namespace jsurl
                             index++;
                             var key = GetProperty(data, ref index);
                             var value = Parse(data, ref index); //Get value
-                            (result as IDictionary<string, object>).Add(key, value);
+                            if(!(result as IDictionary<string, object>).ContainsKey(key))
+                                (result as IDictionary<string, object>).Add(key, value);
                         }
                     }
                 }
@@ -281,6 +282,10 @@ namespace jsurl
                         if (beg < i) r += data.Substring(beg, i - beg);
                         r += '$';
                         beg = ++i;
+                        break;
+                    case '(':
+                        beg++;
+                        i++;
                         break;
                     default:
                         i++;
