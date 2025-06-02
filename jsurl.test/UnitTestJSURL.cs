@@ -233,5 +233,18 @@ namespace jsurl.test
             Assert.AreEqual(expected, actual);
 
         }
+
+        [TestMethod]
+        public void Test14ParseToObj()
+        {
+            string source = "~(~(content~'Container~effectAllowed~'copy~disable~false~children~(~(content~'Text~effectAllowed~'copy~disable~false~handle~false~type~'text~defaultValue~'~propertyType~(propertyTypeId~'a8bbfeb1-f59c-49b2-8f00-97898dd6c604~id~'MP_MEASURESCLASS~name~'Measure*20Class~dataType~'RecordType~multiValue~false~ownerId~'f376aa65-8fbe-4a88-9b32-76243d78ddc9~isDeleted~false~listValues~'4cf4dc9d-b3fa-405e-92cf-29cfe51fbf14~created~'2025-05-22T20*3a09*3a18.567~updated~'2025-05-22T20*3a09*3a18.567))~(content~'Text~effectAllowed~'copy~disable~false~handle~false~type~'text~defaultValue~'~propertyType~(propertyTypeId~'afae91ae-c939-472e-8c26-739185b0b399~id~'MP_CONCEPT~name~'Concept~dataType~'String~multiValue~true~ownerId~'f376aa65-8fbe-4a88-9b32-76243d78ddc9~isDeleted~false~listValues~'fih*2bJ0dlbmVyYWx*2bJ0RvY3VtZW50fidGdW5jdGlvbmFsfidQaHlzaWNhbCk*3d~created~'2025-05-08T21*3a52*3a31.663~updated~'2025-05-22T22*3a33*3a40.58))~(content~'Text~effectAllowed~'copy~disable~false~handle~false~type~'text~defaultValue~'~propertyType~(propertyTypeId~'9f470a55-6968-4f32-8c27-35ea22552840~id~'MP_PRESENCE~name~'Presence~dataType~'String~multiValue~false~ownerId~'f376aa65-8fbe-4a88-9b32-76243d78ddc9~isDeleted~false~listValues~'fih*2bJ09wdGlvbmFsfidOb3RBcHBsaWNhYmxlfidVbnNwZWNpZmllZH4nUHJlZmVycmVkfidSZXF1aXJlZCk*3d~created~'2025-05-22T22*3a37*3a18.74~updated~'2025-05-22T22*3a37*3a18.74)))~handle~false~type~'container))";
+            
+            var productDyn = jsurl.TryParse(source, out dynamic def);
+
+            Assert.IsTrue(productDyn);
+            Assert.IsNotNull(def);
+            //Assert.Pass();
+
+        }
     }
 }

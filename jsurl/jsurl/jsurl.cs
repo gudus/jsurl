@@ -181,6 +181,9 @@ namespace jsurl
                                     index++;
                                 dynamic r = Parse(data, ref index);
                                 result.Add(r);
+                                if((index + 1)>= data.Length) { 
+                                    break; 
+                                }
                             }
                         }
                     }
