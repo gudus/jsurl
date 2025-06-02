@@ -396,3 +396,4 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/jsurl.test/UnitTestJSURL.cs~RF13ec5f9e.TMP
