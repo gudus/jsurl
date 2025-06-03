@@ -51,13 +51,13 @@ namespace jsurl.test
         [TestMethod]
         public void Test02TwoArrays()
         {
-            Product product1 = new Product();
+            Foo product1 = new Foo();
             product1.Name = "A";
             product1.Categories = new List<Category>();
-            Product product2 = new Product();
+            Foo product2 = new Foo();
             product2.Name = "B";
             product2.Categories = new List<Category>();
-            List<Product> products= new List<Product>() { product1, product2 };
+            List<Foo> products= new List<Foo>() { product1, product2 };
             string text = jsurl.ToString(products);
 
             var obj1Str = JsonConvert.SerializeObject(products);
@@ -65,8 +65,8 @@ namespace jsurl.test
             var dynProductsJSURL = jsurl.Parse(text);
             //var dynProductsOriginal = JsonConvert.DeserializeObject<ExpandoObject>(obj1Str);
 
-            string expected = JsonConvert.SerializeObject(products).Replace("\r\n", "").Replace(" ", "").Replace("0.0", "0");
-            string actual = JsonConvert.SerializeObject(dynProductsJSURL).Replace("\r\n", "").Replace(" ", "");
+            string expected = JsonConvert.SerializeObject(products);
+            string actual = JsonConvert.SerializeObject(dynProductsJSURL);
 
             Assert.AreEqual(expected, actual);
             //string expected = "~(~)";

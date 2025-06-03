@@ -8,6 +8,7 @@ using System.Dynamic;
 using System;
 using static System.Net.Mime.MediaTypeNames;
 using Newtonsoft.Json;
+using System.Reflection;
 
 namespace jsurl
 {
@@ -173,56 +174,52 @@ namespace jsurl
                 char ch = data[index];
                 if (data[index]== '(')
                 {
-                    if (index + 1 < data.Length && data[index + 1] == '~')
+                    index++;
+                    if (data[index] == '~')
                     {
                         result = new List<dynamic>();
                         if (data[index + 1] == ')') { index++; }
                         else
                         {
-                            while ((data[index+1] == '~'|| data[index]== '~') 
-                                && data[index] != ')')
+                            do
                             {
-                                if(data[index] != '~')
-                                    index++;
                                 dynamic r = Parse(data, ref index);
-                                if(r != null) result.Add(r);
-                                if((index + 1)>= data.Length) { 
-                                    break; 
-                                }
-                                //if (data[index - 1] == ')')
-                                //{
-                                //    index--;
-                                //}
-                            }
+                                if (r != null) result.Add(r);
+                            } while (data[index] == '~');
                         }
                     }
                     else
                     {
                         result = new ExpandoObject() as IDictionary<string, object>;
-                        while((data[index-1] == '~'|| data[index] == '~') && index < data.Length)
+                        if (data[index] != ')')
                         {
-                            index++;
-                            var key = GetProperty(data, ref index);
-                            var value = Parse(data, ref index); //Get value
-                            if(!(result as IDictionary<string, object>).ContainsKey(key))
-                                (result as IDictionary<string, object>).Add(key, value);
-
-                            if (data[index - 1] == ')') 
-                                return result;
+                            do
+                            {
+                                var key = GetProperty(data, ref index);
+                                var value = Parse(data, ref index); //Get value
+                                if (!(result as IDictionary<string, object>).ContainsKey(key))
+                                    (result as IDictionary<string, object>).Add(key, value);
+                               
+                            } while (data[index] == '~'&& ++index< data.Length);
                         }
                     }
+                    index = Expected(data, index, ')');
+                    break;
                 }
+                //this is property value starts
                 else if (data[index] == '\'')
                 {
                     index++;
                     result = GetProperty(data, ref index);
                     break;
                 }
+                //object or array ends
                 else if (data[index] == ')')
                 {
                     index++;
                     break;
                 }
+                //simple property value
                 else
                 {
                     int beg = index;
